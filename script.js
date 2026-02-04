@@ -8,9 +8,10 @@ const dice2Obj = document.getElementById('dice-2');
 const diceP1Wrapper = document.getElementById('dice-p1');
 const diceP2Wrapper = document.getElementById('dice-p2');
 
-let currentPlayer = 1;
+let currentPlayer = Math.floor(Math.random() * 2) + 1;
 let playerPositions = { 1: 0, 2: 0 };
 let playerCheckpoints = { 1: 0, 2: 0 };
+let playerUnlocked = { 1: false, 2: false };
 let isRolling = false;
 
 // Snake and Ladder definitions
@@ -217,12 +218,40 @@ async function rollDice() {
     const diceWrapper = currentPlayer === 1 ? diceP1Wrapper : diceP2Wrapper;
     const diceObj = currentPlayer === 1 ? dice1Obj : dice2Obj;
 
-    let rollValue = 0;
-    // Animation
-    for (let i = 0; i < 10; i++) {
-        rollValue = Math.floor(Math.random() * 6) + 1;
-        updateDiceDots(currentPlayer, rollValue);
-        await new Promise(r => setTimeout(r, 50));
+    const rollValue = await new Promise(resolve => {
+        let rv = 0;
+        let count = 0;
+        const interval = setInterval(() => {
+            rv = Math.floor(Math.random() * 6) + 1;
+            updateDiceDots(currentPlayer, rv);
+            count++;
+            if (count >= 10) {
+                clearInterval(interval);
+                resolve(rv);
+            }
+        }, 50);
+    });
+
+    // Unlock logic
+    if (!playerUnlocked[currentPlayer]) {
+        if (rollValue === 1) {
+            playerUnlocked[currentPlayer] = true;
+            playerPositions[currentPlayer] = 1;
+            playerCheckpoints[currentPlayer] = 1;
+            updateTokenPositions();
+            showStatus(currentPlayer, "UNLOCKED! + CHECKPOINT", 1500);
+            // Extra turn on 1 (unlock) is like a ladder/6? 
+            // The prompt says "once unlocked its free to go with old rules"
+            // Usually unlock doesn't give extra turn unless it's a 6, but here 1 is the key.
+            // Let's stick to simple unlock and switch turn unless user likes extra turn on unlock.
+            // Wait, rolling a 1 also sets checkpoint in old rules.
+            switchTurn();
+        } else {
+            showStatus(currentPlayer, "NEED A 1 TO START", 1500);
+            switchTurn();
+        }
+        isRolling = false;
+        return;
     }
 
     const moveResult = await movePlayer(currentPlayer, rollValue);
@@ -335,8 +364,9 @@ setTimeout(() => {
     updateTokenPositions();
     updateDiceDots(1, 1);
     updateDiceDots(2, 1);
-    // Start with Player 1
-    diceP2Wrapper.classList.add('hidden');
+    // Start with the randomly selected player
+    diceP1Wrapper.classList.toggle('hidden', currentPlayer === 2);
+    diceP2Wrapper.classList.toggle('hidden', currentPlayer === 1);
 }, 100);
 
 dice1Obj.addEventListener('click', rollDice);
