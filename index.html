@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snake & Ladder - 2 Player</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="game-container">
+        <div id="info-panel">
+            <div id="p2-info" class="player-info">
+                <span class="player-name">Player 2</span>
+                <span class="status-label"></span>
+            </div>
+            <div id="p1-info" class="player-info">
+                <span class="player-name">Player 1</span>
+                <span class="status-label"></span>
+            </div>
+        </div>
+
+        <div id="board-wrapper">
+            <div id="board"></div>
+            <canvas id="game-canvas"></canvas>
+            <div id="player-tokens">
+                <div id="p1-token" class="token"></div>
+                <div id="p2-token" class="token"></div>
+            </div>
+        </div>
+
+        <div id="dice-container">
+            <div id="dice-p2" class="dice-wrapper bottom-left">
+                <div class="dice red" id="dice-2">
+                    <div class="dot-container"></div>
+                </div>
+                <p>Player 2's Turn</p>
+            </div>
+            <div id="dice-p1" class="dice-wrapper bottom-right">
+                <div class="dice red" id="dice-1">
+                    <div class="dot-container"></div>
+                </div>
+                <p>Player 1's Turn</p>
+            </div>
+        </div>
+
+        <div id="overlay" class="hidden">
+            <div id="winner-modal">
+                <h2 id="winner-text"></h2>
+                <button onclick="location.reload()">Play Again</button>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
